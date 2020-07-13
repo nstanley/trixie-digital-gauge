@@ -1,0 +1,3 @@
+[submodule "resources/mausberry-switch"]
+	path = resources/mausberry-switch
+	url = https://github.com/nstanley/mausberry-switch.git
