@@ -15,4 +15,12 @@ BAUDRATE = 24000000
 class TrixieController():
     def __init__(self):
         self.view = TrixieView(cs_pin, dc_pin, reset_pin, BAUDRATE)
-        self.view.showSplash("/home/pi/resources/audi_128x96.png")
+        self.view.showSplash("/home/pi/trixie-digital-gauge/resources/audi_128x96.png")
+        #self.view.showData("Speed", 37)
+
+def main():
+    print("Trixie Digital Gauge Startup!")
+    gauge = TrixieController()
+
+if __name__ == "__main__":
+    main()
