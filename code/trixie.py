@@ -5,6 +5,7 @@ import subprocess
 import digitalio
 import board
 from trixie_view import TrixieView
+from trixie_model import TrixieModel_OBD, TrixieModel_Demo
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
@@ -19,17 +20,16 @@ splashFile = "/home/pi/trixie-digital-gauge/resources/audi_128x96-big-red.png"
 
 class TrixieController():
     def __init__(self):
+        # Setup VIEW
         self.view = TrixieView(cs_pin, dc_pin, reset_pin, BAUDRATE, splashFile)
-        time.sleep(3.2)
-        self.view.showData("Speed", "37")
-        time.sleep(3.2)
-        self.view.showData("RPM", "2237")
-        time.sleep(3.2)
-        self.view.showData("Load", "14")
-        time.sleep(3.2)
-        self.view.showData("Eng Temp", "190")
-        time.sleep(3.2)
-        self.view.showSplash(splashFile)
+
+        # Setup MODEL
+        self.model = TrixieModel_Demo()
+        #self.model = TrixieModel_OBD()
+        if (self.model.connect("/dev/ttyAMA0", 7)):
+            while (True):
+                self.view.showData("Eng Load", str(self.model.getEngineLoad()))
+                time.sleep(0.2)
 
 def main():
     print("Trixie Digital Gauge Startup!")
