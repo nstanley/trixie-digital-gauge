@@ -26,9 +26,32 @@ class TrixieController():
         # Setup MODEL
         self.model = TrixieModel_Demo()
         #self.model = TrixieModel_OBD()
+    
+        # Setup list
+        self.labels = ["Eng Load",
+                       "Eng Temp",
+                       "Short Fuel",
+                       "Long Fuel",
+                       "RPM",
+                       "Speed",
+                       "Intake Temp",
+                       "MAF",
+                       "Throttle"]
+        self.values = [self.model.getEngineLoad,
+                       self.model.getEngineTemp,
+                       self.model.getShortFuelTrim,
+                       self.model.getLongFuelTrim,
+                       self.model.getRPM,
+                       self.model.getSpeed,
+                       self.model.getIntakeTemp,
+                       self.model.getMAF,
+                       self.model.getThrottle]
+        self.index = 0
+
+        # Connect
         if (self.model.connect("/dev/ttyAMA0", 7)):
             while (True):
-                self.view.showData("Eng Load", str(self.model.getEngineLoad()))
+                self.view.showData(self.labels[self.index], str(self.values[self.index]()))
                 time.sleep(0.2)
 
 def main():
