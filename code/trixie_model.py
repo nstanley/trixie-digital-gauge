@@ -34,10 +34,50 @@ class TrixieModel_OBD():
         retrun = self.connection.query(obd.commands.ENGINE_LOAD)
         return retrun.value.magnitude
 
+    def getEngineTemp(self):
+        retrun = self.connection.query(obd.commands.COOLANT_TEMP)
+        return retrun.value.magnitude
+
+    def getShortFuelTrim(self):
+        retrun = self.connection.query(obd.commands.SHORT_FUEL_TRIM_1)
+        return retrun.value.magnitude
+
+    def getLongFuelTrim(self):
+        retrun = self.connection.query(obd.commands.LONG_FUEL_TRIM_1)
+        return retrun.value.magnitude
+
+    def getRPM(self):
+        retrun = self.connection.query(obd.commands.RPM)
+        return retrun.value.magnitude
+
+    def getSpeed(self):
+        retrun = self.connection.query(obd.commands.SPEED)
+        return retrun.value.magnitude
+
+    def getIntakeTemp(self):
+        retrun = self.connection.query(obd.commands.INTAKE_TEMP)
+        return retrun.value.magnitude
+
+    def getMAF(self):
+        retrun = self.connection.query(obd.commands.MAF)
+        return retrun.value.magnitude
+
+    def getThrottle(self):
+        retrun = self.connection.query(obd.commands.THROTTLE_POS)
+        return retrun.value.magnitude
+
 class TrixieModel_Demo():
     def __init__(self):
         print("Demo: Demo model initialized!")
         self.engine_load = 0
+        self.engine_temp = 0
+        self.short_fuel = 0
+        self.long_fuel = 0
+        self.RPM = 0
+        self.speed = 0
+        self.intake_temp = 0
+        self.MAF = 0
+        self.throttle = 0
 
     def connect(self, address, max_attempts):
         print("Demo: Attempting OBD-II connection...")
@@ -58,3 +98,27 @@ class TrixieModel_Demo():
 
         self.engine_load = new_load
         return self.engine_load
+
+    def getEngineTemp(self):
+        return self.engine_temp
+
+    def getShortFuelTrim(self):
+        return self.short_fuel
+
+    def getLongFuelTrim(self):
+        return self.long_fuel
+
+    def getRPM(self):
+        return self.RPM
+
+    def getSpeed(self):
+        return self.speed
+
+    def getIntakeTemp(self):
+        return self.intake_temp
+
+    def getMAF(self):
+        return self.MAF
+
+    def getThrottle(self):
+        return self.throttle
