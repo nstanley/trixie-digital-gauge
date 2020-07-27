@@ -11,7 +11,7 @@ import adafruit_rgb_display.ssd1351 as ssd1351  # pylint: disable=unused-import
 import adafruit_rgb_display.ssd1331 as ssd1331  # pylint: disable=unused-import
 
 class TrixieView():
-    def __init__(self, cs_pin, dc_pin, reset_pin, buad):
+    def __init__(self, cs_pin, dc_pin, reset_pin, buad, splashFile):
         # Setup SPI connection
         self.spi = board.SPI()
         # 1.27" SSD1351 Color OLED display
@@ -42,12 +42,15 @@ class TrixieView():
         self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=(0, 0, 0))
         self.disp.image(self.image)
 
+        # Show the splash screen
+        self.showSplash(splashFile)
+
         # First define some constants to allow easy positioning of text.
         self.padding = 2
         self.x = 0
-
         self.fontDigits = ImageFont.truetype("/home/pi/trixie-digital-gauge/resources/SevenSegment.ttf", 64)
         self.fontLabel = ImageFont.truetype("/home/pi/trixie-digital-gauge/resources/SevenSegment.ttf", 28)
+
 
     def showData(self, label, data):
         # Clear    

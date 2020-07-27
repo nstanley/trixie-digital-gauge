@@ -14,10 +14,12 @@ reset_pin = digitalio.DigitalInOut(board.D24)
 # Config for display baudrate (default max is 24mhz):
 BAUDRATE = 24000000
 
+# Splash Image
+splashFile = "/home/pi/trixie-digital-gauge/resources/audi_128x96-big-red.png"
+
 class TrixieController():
     def __init__(self):
-        self.view = TrixieView(cs_pin, dc_pin, reset_pin, BAUDRATE)
-        self.view.showSplash("/home/pi/trixie-digital-gauge/resources/audi_128x96-big-red.png")
+        self.view = TrixieView(cs_pin, dc_pin, reset_pin, BAUDRATE, splashFile)
         time.sleep(3.2)
         self.view.showData("Speed", "37")
         time.sleep(3.2)
@@ -26,6 +28,8 @@ class TrixieController():
         self.view.showData("Load", "14")
         time.sleep(3.2)
         self.view.showData("Eng Temp", "190")
+        time.sleep(3.2)
+        self.view.showSplash(splashFile)
 
 def main():
     print("Trixie Digital Gauge Startup!")
