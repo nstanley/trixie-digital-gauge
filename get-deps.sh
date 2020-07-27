@@ -7,6 +7,7 @@ sudo apt-get install python3-pil
 
 # pip packages
 pip3 install obd
+pip3 install wiringpi
 pip3 install adafruit-circuitpython-mcp3xxx
 pip3 install adafruit-circuitpython-rgb-display
 
