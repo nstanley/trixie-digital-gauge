@@ -28,7 +28,7 @@ class TrixieController():
         #self.model = TrixieModel_OBD()
     
         # Setup list
-        self.labels = ["Eng Load",
+        self.labels = ("Eng Load",
                        "Eng Temp",
                        "Short Fuel",
                        "Long Fuel",
@@ -36,8 +36,8 @@ class TrixieController():
                        "Speed",
                        "Intake Temp",
                        "MAF",
-                       "Throttle"]
-        self.values = [self.model.getEngineLoad,
+                       "Throttle")
+        self.values = (self.model.getEngineLoad,
                        self.model.getEngineTemp,
                        self.model.getShortFuelTrim,
                        self.model.getLongFuelTrim,
@@ -45,7 +45,7 @@ class TrixieController():
                        self.model.getSpeed,
                        self.model.getIntakeTemp,
                        self.model.getMAF,
-                       self.model.getThrottle]
+                       self.model.getThrottle)
         self.index = 0
 
         # Connect
