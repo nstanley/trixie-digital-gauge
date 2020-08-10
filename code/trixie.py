@@ -4,6 +4,9 @@ import time
 import subprocess
 import digitalio
 import board
+import gaugette.gpio
+import gaugette.rotary_encoder
+
 from trixie_view import TrixieView
 from trixie_model import TrixieModel_OBD, TrixieModel_Demo
 
@@ -17,6 +20,10 @@ BAUDRATE = 24000000
 
 # Splash Image
 splashFile = "/home/pi/trixie-digital-gauge/resources/audi_128x96-big-red.png"
+
+# Rotary encoder pins
+enc_A_pin = 23
+enc_B_pin = 22
 
 class TrixieController():
     def __init__(self):
@@ -47,12 +54,24 @@ class TrixieController():
                        self.model.getMAF,
                        self.model.getThrottle)
         self.index = 0
+        
+        # Setup rotary encoder
+        gpio = gaugette.gpio.GPIO()
+        self.encoder = gaugette.rotary_encoder.RotaryEncoder(gpio, enc_A_pin, enc_B_pin, self.rotated)
+        self.encoder.start()
 
         # Connect
         if (self.model.connect("/dev/ttyAMA0", 7)):
             while (True):
                 self.view.showData(self.labels[self.index], str(self.values[self.index]()))
                 time.sleep(0.2)
+    
+    def rotated(self, direction):
+        self.index += direction
+        if (self.index >= len(self.labels)):
+            self.index = 0
+        if (self.index < 0):
+            self.index = len(self.labels) - 1
 
 def main():
     print("Trixie Digital Gauge Startup!")

@@ -36,7 +36,7 @@ class TrixieModel_OBD():
 
     def getEngineTemp(self):
         retrun = self.connection.query(obd.commands.COOLANT_TEMP)
-        return retrun.value.magnitude
+        return retrun.value.to('degF').magnitude
 
     def getShortFuelTrim(self):
         retrun = self.connection.query(obd.commands.SHORT_FUEL_TRIM_1)
@@ -52,11 +52,11 @@ class TrixieModel_OBD():
 
     def getSpeed(self):
         retrun = self.connection.query(obd.commands.SPEED)
-        return retrun.value.magnitude
+        return retrun.value.to('mph').magnitude
 
     def getIntakeTemp(self):
         retrun = self.connection.query(obd.commands.INTAKE_TEMP)
-        return retrun.value.magnitude
+        return retrun.value.to('degF').magnitude
 
     def getMAF(self):
         retrun = self.connection.query(obd.commands.MAF)
