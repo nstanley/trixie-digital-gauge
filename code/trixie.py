@@ -36,12 +36,12 @@ class TrixieController():
     
         # Setup list
         self.labels = ("Eng Load",
-                       "Eng Temp",
+                       "Coolnt Tmp",
                        "Short Fuel",
                        "Long Fuel",
                        "RPM",
                        "Speed",
-                       "Intake Temp",
+                       "Intake Tmp",
                        "MAF",
                        "Throttle")
         self.values = (self.model.getEngineLoad,

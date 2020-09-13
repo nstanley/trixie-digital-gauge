@@ -63,17 +63,18 @@ class TrixieView():
         # Assign values
         # Label
         self.y = self.padding
+        lblwidth = self.fontLabel.getsize(label)[0]
         self.draw.text(
-            (self.x, self.y),
+            (self.width // 2 - lblwidth // 2, self.y),
             label,
             font=self.fontLabel,
             fill="#FF0000"
         )
         # Data (centered horizontally)
         self.y += self.fontLabel.getsize(label)[1] + self.padding
-        fontwidth = self.fontDigits.getsize(data)[0]
+        datawidth = self.fontDigits.getsize(data)[0]
         self.draw.text(
-            (self.width // 2 - fontwidth // 2, self.y),
+            (self.width // 2 - datawidth // 2, self.y),
             data,
             font=self.fontDigits,
             fill="#FF0000"
