@@ -1,0 +1,20 @@
+        Pwr   - xx - 
+              - xx - 
+              - xx - Gnd
+              - xx - 
+Btn Gray      - xx - 
+              - xx - 
+Btn Purp      - xx - 
+Btn Blue      - xx - 
+              - xx - Scr Purp (R)
+Scr Yllw (SI) - xx - 
+              - xx - Scr Blue (DC)
+Scr Gren (CL) - xx - scr Gray (OC/CE0)
+              - xx - 
+              - xx - 
+              - xx - 
+              - xx - 
+              - xx - 
+              - xx - 
+              - xx - 
+              - xx - 
