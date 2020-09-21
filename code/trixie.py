@@ -36,7 +36,7 @@ class TrixieController():
     
         # Setup list
         self.labels = ("Eng Load",
-                       "Coolnt Tmp",
+                       "Cool Tmp",
                        "Short Fuel",
                        "Long Fuel",
                        "RPM",
