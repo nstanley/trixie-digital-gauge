@@ -15,3 +15,9 @@ pip3 install adafruit-circuitpython-rgb-display
 wget -O sevensegttf.zip https://dl.dafont.com/dl/?f=seven_segment
 unzip sevensegttf.zip
 mv 'Seven Segment.ttf' resources/SevenSegment.ttf
+
+# py-gaugette
+cd ~
+git clone git://github.com/guyc/py-gaugette.git
+cd py-gaugette
+sudo python setup.py install
