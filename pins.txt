@@ -15,6 +15,6 @@ Scr Gren (CL) - xx - scr Gray (OC/CE0)
               - xx - 
               - xx - 
               - xx - 
-              - xx - 
-              - xx - 
-              - xx - 
+Btn Purp (B)  - xx - 
+Btn Blue (A)  - xx - 
+Btn Gray      - xx - 

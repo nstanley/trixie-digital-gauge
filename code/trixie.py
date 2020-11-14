@@ -22,8 +22,8 @@ BAUDRATE = 24000000
 splashFile = "/home/pi/trixie-digital-gauge/resources/audi_128x96-big-red.png"
 
 # Rotary encoder pins (WiringPi numbering)
-enc_A_pin = 3
-enc_B_pin = 2
+enc_A_pin = 25
+enc_B_pin = 24
 
 class TrixieController():
     def __init__(self):
