@@ -1,3 +1,4 @@
+import os
 import time
 import subprocess
 import digitalio
@@ -9,6 +10,8 @@ import adafruit_rgb_display.hx8357 as hx8357  # pylint: disable=unused-import
 import adafruit_rgb_display.st7735 as st7735  # pylint: disable=unused-import
 import adafruit_rgb_display.ssd1351 as ssd1351  # pylint: disable=unused-import
 import adafruit_rgb_display.ssd1331 as ssd1331  # pylint: disable=unused-import
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class TrixieView():
     def __init__(self, cs_pin, dc_pin, reset_pin, buad, splashFile):
@@ -52,8 +55,8 @@ class TrixieView():
         # First define some constants to allow easy positioning of text.
         self.padding = 2
         self.x = 0
-        self.fontDigits = ImageFont.truetype("/home/pi/trixie-digital-gauge/resources/SevenSegment.ttf", 64)
-        self.fontLabel = ImageFont.truetype("/home/pi/trixie-digital-gauge/resources/SevenSegment.ttf", 28)
+        self.fontDigits = ImageFont.truetype(BASE_DIR + "/resources/SevenSegment.ttf", 64)
+        self.fontLabel = ImageFont.truetype(BASE_DIR + "/resources/SevenSegment.ttf", 28)
         print("   ... Done!")
 
     def showData(self, label, data):

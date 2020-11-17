@@ -20,7 +20,8 @@ reset_pin = digitalio.DigitalInOut(board.D24)
 BAUDRATE = 24000000
 
 # Splash Image
-splashFile = "/home/pi/trixie-digital-gauge/resources/audi_128x96-big-red.png"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+splashFile = BASE_DIR + "/resources/audi_128x96-big-red.png"
 
 # Rotary encoder pins (WiringPi numbering)
 enc_A_pin = 25
@@ -83,12 +84,6 @@ class TrixieController():
             self.index = len(self.labels) - 1
 
 def main():
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    print(BASE_DIR)
-    CURR_DIR = os.path.dirname(os.path.realpath(__file__))
-    print(CURR_DIR)
-    CURR_DIR = os.getcwd()
-    print(CURR_DIR)
     print("Trixie Digital Gauge Startup!")
     gauge = TrixieController()
     gauge.run()
