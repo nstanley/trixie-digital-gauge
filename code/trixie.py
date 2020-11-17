@@ -1,5 +1,6 @@
 # Main program to run the OBD Gauge
 
+import os
 import time
 import subprocess
 import digitalio
@@ -31,8 +32,8 @@ class TrixieController():
         self.view = TrixieView(cs_pin, dc_pin, reset_pin, BAUDRATE, splashFile)
 
         # Setup MODEL
-        self.model = TrixieModel_Demo()
-        #self.model = TrixieModel_OBD()
+        # self.model = TrixieModel_Demo()
+        self.model = TrixieModel_OBD()
     
         # Setup list
         self.labels = ("Eng Load",
@@ -62,10 +63,18 @@ class TrixieController():
 
         # Connect
         if (self.model.connect("/dev/ttyAMA0", 7)):
-            while (True):
-                self.view.showData(self.labels[self.index], str(self.values[self.index]()))
-                time.sleep(0.2)
+            print("Connected!")
+        else:
+            print("OBD Timeout, switch to DEMO MODE!")
+            self.model = TrixieModel_Demo()
+            self.model.connect("/dev/ttyAMA0", 7)
+
+    def run(self):
+        while (True):
+            self.view.showData(self.labels[self.index], str(self.values[self.index]()))
+            time.sleep(0.2)
     
+    # ISR for rotary encoder
     def rotated(self, direction):
         self.index += direction
         if (self.index >= len(self.labels)):
@@ -74,8 +83,15 @@ class TrixieController():
             self.index = len(self.labels) - 1
 
 def main():
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    print(BASE_DIR)
+    CURR_DIR = os.path.dirname(os.path.realpath(__file__))
+    print(CURR_DIR)
+    CURR_DIR = os.getcwd()
+    print(CURR_DIR)
     print("Trixie Digital Gauge Startup!")
     gauge = TrixieController()
+    gauge.run()
 
 if __name__ == "__main__":
     main()
