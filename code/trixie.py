@@ -9,7 +9,7 @@ import gaugette.gpio
 import gaugette.rotary_encoder
 
 from trixie_view import TrixieView
-from trixie_model import TrixieModel_OBD, TrixieModel_Demo
+from trixie_model import TrixieModel, TrixieModel_OBD, TrixieModel_Demo
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
@@ -33,9 +33,11 @@ class TrixieController():
         self.view = TrixieView(cs_pin, dc_pin, reset_pin, BAUDRATE, splashFile)
 
         # Setup MODEL
-        # self.model = TrixieModel_Demo()
-        self.model = TrixieModel_OBD()
-    
+        self.modelDemo = TrixieModel_Demo()
+        self.modelOBD = TrixieModel_OBD()
+        self.model = TrixieModel()
+        self.model = modelOBD
+
         # Setup list
         self.labels = ("Eng Load",
                        "Cool Tmp",
@@ -67,7 +69,7 @@ class TrixieController():
             print("Connected!")
         else:
             print("OBD Timeout, switch to DEMO MODE!")
-            self.model = TrixieModel_Demo()
+            self.model = modelDemo
             self.model.connect("/dev/ttyAMA0", 7)
 
     def run(self):

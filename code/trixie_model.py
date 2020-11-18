@@ -7,7 +7,37 @@ from obd import OBDCommand, Unit
 from obd.protocols import ECU
 from obd.utils import bytes_to_int
 
-class TrixieModel_OBD():
+class TrixieModel():
+    def __init__(self):
+        print("baseclass")
+
+    def getEngineLoad(self):
+        return 0
+
+    def getEngineTemp(self):
+        return 0
+
+    def getShortFuelTrim(self):
+        return 0
+
+    def getLongFuelTrim(self):
+        return 0
+
+    def getRPM(self):
+        return 0
+    def getSpeed(self):
+        return 0
+
+    def getIntakeTemp(self):
+        return 0
+
+    def getMAF(self):
+        return 0
+
+    def getThrottle(self):
+        return 0
+
+class TrixieModel_OBD(TrixieModel):
     def __init__(self):
         print("OBD: OBD model initialized")
 
@@ -66,7 +96,7 @@ class TrixieModel_OBD():
         retrun = self.connection.query(obd.commands.THROTTLE_POS)
         return retrun.value.magnitude
 
-class TrixieModel_Demo():
+class TrixieModel_Demo(TrixieModel):
     def __init__(self):
         print("Demo: Demo model initialized!")
         self.engine_load = 0
