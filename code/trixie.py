@@ -35,8 +35,15 @@ class TrixieController():
         # Setup MODEL
         self.modelDemo = TrixieModel_Demo()
         self.modelOBD = TrixieModel_OBD()
-        self.model = TrixieModel()
-        self.model = modelOBD
+        self.model = self.modelOBD
+
+        # Connect
+        if (self.model.connect("/dev/ttyAMA0", 7)):
+            print("Connected!")
+        else:
+            print("OBD Timeout, switch to DEMO MODE!")
+            self.model = self.modelDemo
+            self.model.connect("/dev/ttyAMA0", 7)
 
         # Setup list
         self.labels = ("Eng Load",
@@ -63,14 +70,6 @@ class TrixieController():
         gpio = gaugette.gpio.GPIO()
         self.encoder = gaugette.rotary_encoder.RotaryEncoder(gpio, enc_A_pin, enc_B_pin, self.rotated)
         self.encoder.start()
-
-        # Connect
-        if (self.model.connect("/dev/ttyAMA0", 7)):
-            print("Connected!")
-        else:
-            print("OBD Timeout, switch to DEMO MODE!")
-            self.model = modelDemo
-            self.model.connect("/dev/ttyAMA0", 7)
 
     def run(self):
         while (True):
