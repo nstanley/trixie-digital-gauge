@@ -4,6 +4,7 @@
 # apt packages
 sudo apt-get install python3-pip
 sudo apt-get install python3-pil
+sudo apt-get install python3-numpy
 
 # pip packages
 pip3 install obd
