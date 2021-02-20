@@ -62,39 +62,39 @@ class TrixieModel_OBD(TrixieModel):
 
     def getEngineLoad(self):
         retrun = self.connection.query(obd.commands.ENGINE_LOAD)
-        return retrun.value.magnitude
+        return '{:d}'.format(int(retrun.value.magnitude))
 
     def getEngineTemp(self):
         retrun = self.connection.query(obd.commands.COOLANT_TEMP)
-        return retrun.value.to('degF').magnitude
+        return '{:d}'.format(int(retrun.value.to('degF').magnitude))
 
     def getShortFuelTrim(self):
         retrun = self.connection.query(obd.commands.SHORT_FUEL_TRIM_1)
-        return retrun.value.magnitude
+        return '{:.2f}'.format(retrun.value.magnitude)
 
     def getLongFuelTrim(self):
         retrun = self.connection.query(obd.commands.LONG_FUEL_TRIM_1)
-        return retrun.value.magnitude
+        return '{:.2f}'.format(retrun.value.magnitude)
 
     def getRPM(self):
         retrun = self.connection.query(obd.commands.RPM)
-        return retrun.value.magnitude
+        return '{:d}'.format(int(retrun.value.magnitude))
 
     def getSpeed(self):
         retrun = self.connection.query(obd.commands.SPEED)
-        return retrun.value.to('mph').magnitude
+        return '{:d}'.format(int(retrun.value.to('mph').magnitude))
 
     def getIntakeTemp(self):
         retrun = self.connection.query(obd.commands.INTAKE_TEMP)
-        return retrun.value.to('degF').magnitude
+        return '{:d}'.format(int(retrun.value.to('degF').magnitude))
 
     def getMAF(self):
         retrun = self.connection.query(obd.commands.MAF)
-        return retrun.value.magnitude
+        return '{:.2f}'.format(retrun.value.magnitude)
 
     def getThrottle(self):
         retrun = self.connection.query(obd.commands.THROTTLE_POS)
-        return retrun.value.magnitude
+        return '{:d}'.format(int(retrun.value.magnitude))
 
 class TrixieModel_Demo(TrixieModel):
     def __init__(self):

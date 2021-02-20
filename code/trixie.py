@@ -24,8 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 splashFile = BASE_DIR + "/resources/audi_128x96-big-red.png"
 
 # Rotary encoder pins (WiringPi numbering)
-enc_A_pin = 25
+enc_A_pin = 23
 enc_B_pin = 24
+enc_btn_pin = 25
 
 class TrixieController():
     def __init__(self):
@@ -38,7 +39,7 @@ class TrixieController():
         self.model = self.modelOBD
 
         # Connect
-        if (self.model.connect("/dev/ttyAMA0", 7)):
+        if (self.model.connect("/dev/ttyUSB0", 7)):
             print("Connected!")
         else:
             print("OBD Timeout, switch to DEMO MODE!")
