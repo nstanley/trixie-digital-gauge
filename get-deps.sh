@@ -5,6 +5,7 @@
 sudo apt-get install python3-pip
 sudo apt-get install python3-pil
 sudo apt-get install python3-numpy
+sudo apt-get install wiringpi
 
 # pip packages
 pip3 install obd
@@ -12,10 +13,9 @@ pip3 install wiringpi
 pip3 install adafruit-circuitpython-mcp3xxx
 pip3 install adafruit-circuitpython-rgb-display
 
-# Seven seg font
-wget -O sevensegttf.zip https://dl.dafont.com/dl/?f=seven_segment
-unzip sevensegttf.zip
-mv 'Seven Segment.ttf' resources/SevenSegment.ttf
+# Seven seg font original source
+# wget -O sevensegttf.zip https://dl.dafont.com/dl/?f=seven_segment
+# unzip sevensegttf.zip
 
 # py-gaugette
 cd ~
