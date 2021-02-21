@@ -40,8 +40,11 @@ class TrixieController():
 
         # Connect
         if (self.model.connect("/dev/ttyUSB0", 7)):
+            self.demo = False
             print("Connected!")
         else:
+            self.demo = True
+            self.startTime = time.perf_counter()
             print("OBD Timeout, switch to DEMO MODE!")
             self.model = self.modelDemo
             self.model.connect("/dev/ttyAMA0", 7)
@@ -76,6 +79,12 @@ class TrixieController():
         while (True):
             self.view.showData(self.labels[self.index], str(self.values[self.index]()))
             time.sleep(0.2)
+            # Only run the demo for 30s
+            if self.demo:
+                now = time.perf_counter()
+                diff = now - self.startTime
+                if (diff > 30):
+                    exit()
     
     # ISR for rotary encoder
     def rotated(self, direction):
