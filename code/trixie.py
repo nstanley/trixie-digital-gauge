@@ -7,6 +7,7 @@ import digitalio
 import board
 import gaugette.gpio
 import gaugette.rotary_encoder
+import json
 
 from trixie_view import TrixieView
 from trixie_model import TrixieModel, TrixieModel_OBD, TrixieModel_Demo
@@ -68,7 +69,7 @@ class TrixieController():
                        self.model.getIntakeTemp,
                        self.model.getMAF,
                        self.model.getThrottle)
-        self.index = 0
+        self.load()
         
         # Setup rotary encoder
         gpio = gaugette.gpio.GPIO()
@@ -76,15 +77,22 @@ class TrixieController():
         self.encoder.start()
 
     def run(self):
-        while (True):
-            self.view.showData(self.labels[self.index], str(self.values[self.index]()))
-            time.sleep(0.2)
-            # Only run the demo for 30s
+        running = True
+        while (running):
+            try:
+                self.view.showData(self.labels[self.index], str(self.values[self.index]()))
+                time.sleep(0.2)
+            except:
+                running = False
+
+            # Only run the demo for 64s
             if self.demo:
                 now = time.perf_counter()
                 diff = now - self.startTime
-                if (diff > 30):
-                    exit()
+                if (diff > 64):
+                    running = False
+        self.save()
+        exit()
     
     # ISR for rotary encoder
     def rotated(self, direction):
@@ -93,6 +101,26 @@ class TrixieController():
             self.index = 0
         if (self.index < 0):
             self.index = len(self.labels) - 1
+
+    def save(self):
+        data = {}
+        data['save'] = []
+        data['save'].append(
+            {
+                'gaugeIndex': self.index
+            }
+        )
+        with open('save.json', 'w') as filePtr:
+            json.dump(data, filePtr)
+
+    def load(self):
+        try:
+            with open('save.json', 'r') as filePtr:
+                saveData = json.load(filePtr)
+                for d in saveData['save']:
+                    self.index = d['gaugeIndex']
+        except:
+            self.index = 0
 
 def main():
     print("Trixie Digital Gauge Startup!")
