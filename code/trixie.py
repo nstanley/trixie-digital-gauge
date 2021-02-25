@@ -10,7 +10,7 @@ import gaugette.rotary_encoder
 import json
 import enum
 
-from trixie_view import TrixieView_OLED
+from trixie_view import TrixieView_OLED, TrixieView_DIS
 from trixie_model import TrixieModel, TrixieModel_OBD, TrixieModel_Demo
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
@@ -30,6 +30,10 @@ enc_A_pin = 23
 enc_B_pin = 24
 enc_btn_pin = 25
 
+dis_clk_pin = 1
+dis_data_pin = 2
+dis_enable_pin = 3
+
 class Mode(str, enum.Enum):
     ControlGauge = "ControlGauge"
     ControlRadio = "ControlRadio"
@@ -38,8 +42,9 @@ class Mode(str, enum.Enum):
 class TrixieController():
     def __init__(self):
         # Setup VIEW
-        self.view = TrixieView_OLED(cs_pin, dc_pin, reset_pin, BAUDRATE, splashFile)
-
+        self.viewGauge = TrixieView_OLED(cs_pin, dc_pin, reset_pin, BAUDRATE, splashFile)
+        self.viewRadio = TrixieView_DIS(dis_clk_pin, dis_data_pin, dis_enable_pin)
+    
         # Setup MODEL
         self.modelDemo = TrixieModel_Demo()
         self.modelOBD = TrixieModel_OBD()
@@ -88,7 +93,8 @@ class TrixieController():
         running = True
         while (running):
             try:
-                self.view.showData(self.labels[self.gaugeIndex], str(self.values[self.gaugeIndex]()))
+                self.viewGauge.showData(self.labels[self.gaugeIndex], str(self.values[self.gaugeIndex]()))
+                self.viewRadio.showData(self.labels[self.radioIndex], str(self.values[self.radioIndex]()))
                 time.sleep(0.2)
             except:
                 running = False

@@ -3,6 +3,7 @@ import time
 import subprocess
 import digitalio
 import board
+import wiringpi
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.ili9341 as ili9341
 import adafruit_rgb_display.st7789 as st7789  # pylint: disable=unused-import
@@ -89,3 +90,51 @@ class TrixieView_OLED():
     def showSplash(self, file):
         splash = Image.open(file)
         self.disp.image(splash)
+
+class TrixieView_DIS():
+    def __init__(self, clk, data, enable):
+        self.clk = clk
+        self.data = data
+        self.enable = enable
+
+        wiringpi.wiringPiSetup()
+        wiringpi.pinMode(self.clk, 1)
+        wiringpi.pinMode(self.data, 1)
+        wiringpi.pinMode(self.enable, 1)
+
+        self.showData("Welcome", "")
+
+    def showData(self, label, data):
+        label = label[:8].center(8)
+        data = data[:7].center(7)
+        message = label + data
+
+        msgArr = bytearray(message, "ascii")
+        header = 0xF0
+        command = 0x1C
+
+        byteArr = bytearray()
+        byteArr.append(header)
+        byteArr = byteArr + msgArr
+        byteArr.append(command)
+        byteObj = bytes(byteArr)
+
+        checksum = 0
+        for val in byteObj:
+            checksum += val
+        checksum &= 0xFF
+        checksum ^= 0xFF
+        byteArr.append(checksum)
+        byteObj = bytes(byteArr)
+
+        wiringpi.digitalWrite(self.enable, 1)
+        for val in byteObj:
+            for i in range(8):
+                if (val & 0x80):
+                    wiringpi.digitalWrite(self.data, 1)
+                else:
+                    wiringpi.digitalWrite(self.data, 0)
+                val <<= 1
+            wiringpi.digitalWrite(self.clk, 0)
+            wiringpi.digitalWrite(self.clk, 1)
+        wiringpi.digitalWrite(self.enable, 0)
