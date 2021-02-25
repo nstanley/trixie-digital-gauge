@@ -30,9 +30,10 @@ enc_A_pin = 23
 enc_B_pin = 24
 enc_btn_pin = 25
 
-dis_clk_pin = 1
-dis_data_pin = 2
-dis_enable_pin = 3
+# Radio display pins (WiringPi numbering)
+dis_clk_pin = 27
+dis_data_pin = 28
+dis_enable_pin = 29
 
 class Mode(str, enum.Enum):
     ControlGauge = "ControlGauge"
@@ -94,7 +95,10 @@ class TrixieController():
         while (running):
             try:
                 self.viewGauge.showData(self.labels[self.gaugeIndex], str(self.values[self.gaugeIndex]()))
-                self.viewRadio.showData(self.labels[self.radioIndex], str(self.values[self.radioIndex]()))
+                if (self.radioIndex >= len(self.labels)):
+                    self.viewRadio.showData("", "")
+                else:
+                    self.viewRadio.showData(self.labels[self.radioIndex], str(self.values[self.radioIndex]()))
                 time.sleep(0.2)
             except:
                 running = False
@@ -118,10 +122,10 @@ class TrixieController():
                 self.gaugeIndex = len(self.labels) - 1
         elif (self.modeIndex == Mode.ControlRadio):
             self.radioIndex += direction
-            if (self.radioIndex >= len(self.labels)):
+            if (self.radioIndex > len(self.labels)): # additional index for off
                 self.radioIndex = 0
             if (self.radioIndex < 0):
-                self.radioIndex = len(self.labels) - 1
+                self.radioIndex = len(self.labels)
 
     def pushed(self):
         if (self.modeIndex == Mode.ControlGauge):
