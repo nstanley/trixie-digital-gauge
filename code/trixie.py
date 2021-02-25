@@ -8,8 +8,9 @@ import board
 import gaugette.gpio
 import gaugette.rotary_encoder
 import json
+import enum
 
-from trixie_view import TrixieView
+from trixie_view import TrixieView_OLED
 from trixie_model import TrixieModel, TrixieModel_OBD, TrixieModel_Demo
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
@@ -29,10 +30,15 @@ enc_A_pin = 23
 enc_B_pin = 24
 enc_btn_pin = 25
 
+class Mode(str, enum.Enum):
+    ControlGauge = "ControlGauge"
+    ControlRadio = "ControlRadio"
+    ControlNone = "ControlNone"
+
 class TrixieController():
     def __init__(self):
         # Setup VIEW
-        self.view = TrixieView(cs_pin, dc_pin, reset_pin, BAUDRATE, splashFile)
+        self.view = TrixieView_OLED(cs_pin, dc_pin, reset_pin, BAUDRATE, splashFile)
 
         # Setup MODEL
         self.modelDemo = TrixieModel_Demo()
@@ -53,8 +59,8 @@ class TrixieController():
         # Setup list
         self.labels = ("Eng Load",
                        "Cool Tmp",
-                       "Short Fuel",
-                       "Long Fuel",
+                       "S Fuel",
+                       "L Fuel",
                        "RPM",
                        "Speed",
                        "Intake Tmp",
@@ -75,12 +81,14 @@ class TrixieController():
         gpio = gaugette.gpio.GPIO()
         self.encoder = gaugette.rotary_encoder.RotaryEncoder(gpio, enc_A_pin, enc_B_pin, self.rotated)
         self.encoder.start()
+        self.button = gaugette.gaugette.switch.Switch(gpio, enc_btn_pin)
+        self.button.enable_isr(gpio.EDGE_FALLING, self.pushed)
 
     def run(self):
         running = True
         while (running):
             try:
-                self.view.showData(self.labels[self.index], str(self.values[self.index]()))
+                self.view.showData(self.labels[self.gaugeIndex], str(self.values[self.gaugeIndex]()))
                 time.sleep(0.2)
             except:
                 running = False
@@ -96,18 +104,35 @@ class TrixieController():
     
     # ISR for rotary encoder
     def rotated(self, direction):
-        self.index += direction
-        if (self.index >= len(self.labels)):
-            self.index = 0
-        if (self.index < 0):
-            self.index = len(self.labels) - 1
+        if (self.modeIndex == Mode.ControlGauge):
+            self.gaugeIndex += direction
+            if (self.gaugeIndex >= len(self.labels)):
+                self.gaugeIndex = 0
+            if (self.gaugeIndex < 0):
+                self.gaugeIndex = len(self.labels) - 1
+        elif (self.modeIndex == Mode.ControlRadio):
+            self.radioIndex += direction
+            if (self.radioIndex >= len(self.labels)):
+                self.radioIndex = 0
+            if (self.radioIndex < 0):
+                self.radioIndex = len(self.labels) - 1
+
+    def pushed(self):
+        if (self.modeIndex == Mode.ControlGauge):
+            self.modeIndex = Mode.ControlRadio
+        elif (self.modeIndex == Mode.ControlRadio):
+            self.modeIndex = Mode.ControlNone
+        elif (self.modeIndex == Mode.ControlNone):
+            self.modeIndex = Mode.ControlGauge
 
     def save(self):
         data = {}
         data['save'] = []
         data['save'].append(
             {
-                'gaugeIndex': self.index
+                'gaugeIndex': self.gaugeIndex,
+                'radioIndex': self.radioIndex,
+                'modeIndex': self.modeIndex
             }
         )
         with open('save.json', 'w') as filePtr:
@@ -118,9 +143,13 @@ class TrixieController():
             with open('save.json', 'r') as filePtr:
                 saveData = json.load(filePtr)
                 for d in saveData['save']:
-                    self.index = d['gaugeIndex']
+                    self.gaugeIndex = d['gaugeIndex']
+                    self.radioIndex = d['radioIndex']
+                    self.modeIndex = d['modeIndex']
         except:
-            self.index = 0
+            self.gaugeIndex = 0
+            self.radioIndex = 0
+            self.modeIndex = Mode.ControlNone
 
 def main():
     print("Trixie Digital Gauge Startup!")

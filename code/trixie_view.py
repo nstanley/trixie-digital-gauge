@@ -13,7 +13,7 @@ import adafruit_rgb_display.ssd1331 as ssd1331  # pylint: disable=unused-import
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-class TrixieView():
+class TrixieView_OLED():
     def __init__(self, cs_pin, dc_pin, reset_pin, buad, splashFile):
         # Setup SPI connection
         print("   Connecting to OLED via SPI...")
