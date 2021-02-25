@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import subprocess
 import digitalio
@@ -104,7 +105,14 @@ class TrixieView_DIS():
 
         self.showData("Welcome", "")
 
+    # thanks https://stackoverflow.com/a/21582376
+    def anti_vowel(self, msg):
+        result = re.sub(r'[aeiou]', '', msg)
+        return result
+
     def showData(self, label, data):
+        if (len(label) > 8):
+            label = self.anti_vowel(label)
         label = label[:8].center(8)
         data = data[:7].center(7)
         message = label + data
