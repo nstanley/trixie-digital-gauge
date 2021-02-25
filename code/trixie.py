@@ -7,6 +7,7 @@ import digitalio
 import board
 import gaugette.gpio
 import gaugette.rotary_encoder
+import gaugette.switch
 import json
 import enum
 
