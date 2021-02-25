@@ -48,7 +48,7 @@ class TrixieController():
     def __init__(self):
         # Setup VIEW
         self.viewGauge = TrixieView_OLED(cs_pin, dc_pin, reset_pin, BAUDRATE, splashFile)
-        self.viewRadio = TrixieView_DIS(dis_clk_pin, dis_data_pin, dis_enable_pin)
+        # self.viewRadio = TrixieView_DIS(dis_clk_pin, dis_data_pin, dis_enable_pin)
     
         # Setup MODEL
         self.modelDemo = TrixieModel_Demo()
@@ -91,7 +91,7 @@ class TrixieController():
         gpio = gaugette.gpio.GPIO()
         self.encoder = gaugette.rotary_encoder.RotaryEncoder(gpio, enc_A_pin, enc_B_pin, self.rotated)
         self.encoder.start()
-        self.button = gaugette.gaugette.switch.Switch(gpio, enc_btn_pin)
+        self.button = gaugette.switch.Switch(gpio, enc_btn_pin)
         self.button.enable_isr(gpio.EDGE_FALLING, self.pushed)
 
     def run(self):
@@ -99,10 +99,10 @@ class TrixieController():
         while (running):
             try:
                 self.viewGauge.showData(self.labels[self.gaugeIndex], str(self.values[self.gaugeIndex]()))
-                if (self.radioIndex >= len(self.labels)):
-                    self.viewRadio.showData("", "")
-                else:
-                    self.viewRadio.showData(self.labels[self.radioIndex], str(self.values[self.radioIndex]()))
+                # if (self.radioIndex >= len(self.labels)):
+                #     self.viewRadio.showData("", "")
+                # else:
+                #     self.viewRadio.showData(self.labels[self.radioIndex], str(self.values[self.radioIndex]()))
                 time.sleep(0.2)
             except:
                 running = False
