@@ -94,14 +94,20 @@ class TrixieView_OLED():
 
 class TrixieView_DIS():
     def __init__(self, clk, data, enable):
-        self.clk = clk
-        self.data = data
-        self.enable = enable
+        # self.clk = clk
+        # self.data = data
+        # self.enable = enable
+        # wiringpi.wiringPiSetup()
+        # wiringpi.pinMode(self.clk, 1)
+        # wiringpi.pinMode(self.data, 1)
+        # wiringpi.pinMode(self.enable, 1)
 
-        wiringpi.wiringPiSetup()
-        wiringpi.pinMode(self.clk, 1)
-        wiringpi.pinMode(self.data, 1)
-        wiringpi.pinMode(self.enable, 1)
+        self.clk = digitalio.DigitalInOut(clk)
+        self.clk.direction = digitalio.Direction.OUTPUT
+        self.data = digitalio.DigitalInOut(data)
+        self.data.direction = digitalio.Direction.OUTPUT
+        self.enable = digitalio.DigitalInOut(enable)
+        self.enable.direction = digitalio.Direction.OUTPUT
 
         self.showData("Welcome", "")
 
@@ -135,14 +141,20 @@ class TrixieView_DIS():
         byteArr.append(checksum)
         byteObj = bytes(byteArr)
 
-        wiringpi.digitalWrite(self.enable, 1)
+        self.enable.value = True
+        # wiringpi.digitalWrite(self.enable, 1)
         for val in byteObj:
             for i in range(8):
                 if (val & 0x80):
-                    wiringpi.digitalWrite(self.data, 1)
+                    self.data.value = True
+                    # wiringpi.digitalWrite(self.data, 1)
                 else:
-                    wiringpi.digitalWrite(self.data, 0)
+                    self.data.value = False
+                    # wiringpi.digitalWrite(self.data, 0)
                 val <<= 1
-            wiringpi.digitalWrite(self.clk, 0)
-            wiringpi.digitalWrite(self.clk, 1)
-        wiringpi.digitalWrite(self.enable, 0)
+            self.clk.value = False
+            self.clk.value = True
+            # wiringpi.digitalWrite(self.clk, 0)
+            # wiringpi.digitalWrite(self.clk, 1)
+        self.enable.value = False
+        # wiringpi.digitalWrite(self.enable, 0)

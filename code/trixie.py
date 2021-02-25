@@ -31,9 +31,13 @@ enc_B_pin = 24
 enc_btn_pin = 25
 
 # Radio display pins (WiringPi numbering)
-dis_clk_pin = 27
-dis_data_pin = 28
-dis_enable_pin = 29
+# dis_clk_pin = 27
+# dis_data_pin = 28
+# dis_enable_pin = 29
+# Broadcom numbering
+dis_clk_pin = board.D16
+dis_data_pin = board.D20
+dis_enable_pin =board.D21
 
 class Mode(str, enum.Enum):
     ControlGauge = "ControlGauge"
