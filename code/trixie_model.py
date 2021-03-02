@@ -90,7 +90,7 @@ class TrixieModel_OBD(TrixieModel):
 
     def getMAF(self):
         retrun = self.connection.query(obd.commands.MAF)
-        return '{:.2f}'.format(retrun.value.magnitude)
+        return '{:.1f}'.format(retrun.value.magnitude)
 
     def getThrottle(self):
         retrun = self.connection.query(obd.commands.THROTTLE_POS)
