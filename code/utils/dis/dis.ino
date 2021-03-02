@@ -14,7 +14,53 @@ const uint8_t command = 0x1C;    // Byte 16 is the command byte
 uint8_t checksum;                // Byte 17 is the checksum
 uint8_t message[MESSAGE_SIZE];
 
+// Demo messages
+char lbl_fm[] = "   99.2";
+char dta_fm[] = "FM1-1";
+char lbl_wel[] = "WELCOME";
+char dta_wel[] = "";
+char lbl_speed[] = "SPEED";
+char dta_speed[] = "30";
+char lbl_maf[] = "MAF";
+char dta_maf[] = "22.3";
+
+bool sync = false;
+
+void sendMessage() {
+  // Send the data
+  digitalWrite(enable_pin, HIGH);
+  for (int i = 0; i < MESSAGE_SIZE; i++) {
+    uint8_t data = message[i];
+
+    for (int j = 0; j < 8; j++) {
+      digitalWrite(clk_pin, HIGH);
+      if (data & 0x80) {
+        // Serial.print("1");
+        digitalWrite(data_pin, LOW); // inverted logic
+      }
+      else {
+        // Serial.print("0");
+        digitalWrite(data_pin, HIGH); // inverted logic
+      }
+      data <<= 1;
+      if (j == 3) {
+        // Serial.print(" ");
+      }
+      digitalWrite(clk_pin, LOW);
+    }
+    // Serial.print("  ");
+    // Serial.print(message[i]);
+    // Serial.print("\n");
+  }
+  digitalWrite(enable_pin, LOW);
+  digitalWrite(clk_pin, HIGH);
+  digitalWrite(data_pin, HIGH);
+  // Serial.write("-------\n");
+  delay(500);
+}
+
 void showData(char *label, char *data) {
+  digitalWrite(enable_pin, HIGH);
   // Check lengths and truncate if necessary
   int lenLabel = strlen(label);
   if (lenLabel > MAX_LABEL) {
@@ -55,36 +101,8 @@ void showData(char *label, char *data) {
   checksum ^= 0xff;
   message[17] = checksum;
 
-  // Send the data
-  digitalWrite(enable_pin, HIGH);
-  for (int i = 0; i < MESSAGE_SIZE; i++) {
-    uint8_t data = message[i];
-
-    for (int j = 0; j < 8; j++) {
-      if (data & 0x80) {
-        Serial.print("1");
-        digitalWrite(data_pin, HIGH);
-      }
-      else {
-        Serial.print("0");
-        digitalWrite(data_pin, LOW);
-      }
-      data <<= 1;
-      if (j == 3) {
-        Serial.print(" ");
-      }
-      // digitalWrite(clk_pin, LOW);
-      // digitalWrite(clk_pin, HIGH);
-    }
-    Serial.print("  ");
-    Serial.print(message[i]);
-    Serial.print("\n");
-    digitalWrite(clk_pin, LOW);
-    digitalWrite(clk_pin, HIGH);
-  }
   digitalWrite(enable_pin, LOW);
-  Serial.write("-------\n");
-  delay(500);
+  sendMessage();
 }
 
 void setup() {
@@ -94,15 +112,19 @@ void setup() {
   pinMode(enable_pin, OUTPUT);
   message[0] = header;
   message[16] = command;
+  digitalWrite(enable_pin, LOW);
+  digitalWrite(clk_pin, HIGH);
+  digitalWrite(data_pin, HIGH);
 }
 
 void loop() {
-  showData("   99.2", "FM1-1");
+  // Demo messages
+  showData(lbl_fm, dta_fm);
   delay(2000);
- showData("Welcome", "");
- delay(2000);
- showData("Speed", "30");
- delay(2000);
- showData("MAF", "22.3");
- delay(2000);
+  showData(lbl_wel, dta_wel);
+  delay(2000);
+  showData(lbl_speed, dta_speed);
+  delay(2000);
+  showData(lbl_maf, dta_maf);
+  delay(2000);
 }
