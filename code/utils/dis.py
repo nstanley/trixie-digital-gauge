@@ -1,6 +1,7 @@
 import digitalio
 import board
 import re
+import time
 
 # Broadcom numbering
 dis_clk_pin = board.D16
@@ -75,4 +76,21 @@ class TrixieView_DIS():
 
 
 viewRadio = TrixieView_DIS(dis_clk_pin, dis_data_pin, dis_enable_pin)
-viewRadio.showData("Speed", 30)
+viewRadio.showData("Eng Load", str(6))
+time.sleep(2.0)
+viewRadio.showData("Cool Tmp", str(190))
+time.sleep(2.0)
+viewRadio.showData("S Fuel", str(-7.86))
+time.sleep(2.0)
+viewRadio.showData("L Fuel", str(1.21))
+time.sleep(2.0)
+viewRadio.showData("RPM", str(2345))
+time.sleep(2.0)
+viewRadio.showData("Speed", str(30))
+time.sleep(2.0)
+viewRadio.showData("Intake Tmp", str(86))
+time.sleep(2.0)
+viewRadio.showData("MAF", str(55.66))
+time.sleep(2.0)
+viewRadio.showData("Throttle", str(33))
+time.sleep(2.0)
