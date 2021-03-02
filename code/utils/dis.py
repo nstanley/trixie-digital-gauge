@@ -9,7 +9,7 @@ dis_data_pin = board.D20
 dis_enable_pin =board.D21
 
 class TrixieView_DIS():
-    def __init__(self, clk, data, enable):
+    def __init__(self, clk, data, enable, numLines):
 
         self.clk = digitalio.DigitalInOut(clk)
         self.clk.direction = digitalio.Direction.OUTPUT
@@ -23,7 +23,13 @@ class TrixieView_DIS():
         self.data.value = True
         self.enable.value = False
 
-        self.showData("Welcome", "")
+        if (numLines <= 1):
+            self.numLines = 1
+            self.showData("", "HI!")
+        else:
+            self.numLines = 2
+            self.showData("Welcome", "")
+
 
     # thanks https://stackoverflow.com/a/21582376
     def anti_vowel(self, msg):
@@ -32,12 +38,20 @@ class TrixieView_DIS():
 
     def showData(self, label, data):
         self.enable.value = True
-        if (len(label) > 8):
+        if (self.numLines == 1):
             label = self.anti_vowel(label)
-        label = label[:8].center(8)
-        label = label.upper() # Audi requires uppercase
-        data = data[:7].center(7)
-        message = label + data
+            label = label[:3].upper()
+            if (len(data) >= 4):
+                if (data[3] == '.'):
+                    data = data[:3]
+            data = data[:4].rjust(4)
+            message = label + " " + data
+        else: # numLines == 2
+            if (len(label) > 8):
+                label = self.anti_vowel(label)
+            label = label[:8].center(8).upper() # Audi requires uppercase
+            data = data[:7].center(7)
+            message = label + data
 
         msgArr = bytearray(message, "ascii")
         header = 0xF0
@@ -75,7 +89,7 @@ class TrixieView_DIS():
         self.data.value = True
 
 
-viewRadio = TrixieView_DIS(dis_clk_pin, dis_data_pin, dis_enable_pin)
+viewRadio = TrixieView_DIS(dis_clk_pin, dis_data_pin, dis_enable_pin, 2)
 viewRadio.showData("Eng Load", str(6))
 time.sleep(2.0)
 viewRadio.showData("Cool Tmp", str(190))
