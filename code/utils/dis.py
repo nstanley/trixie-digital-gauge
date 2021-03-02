@@ -2,10 +2,6 @@ import digitalio
 import board
 import re
 
-# Radio display pins (WiringPi numbering)
-# dis_clk_pin = 27
-# dis_data_pin = 28
-# dis_enable_pin = 29
 # Broadcom numbering
 dis_clk_pin = board.D16
 dis_data_pin = board.D20
@@ -13,13 +9,6 @@ dis_enable_pin =board.D21
 
 class TrixieView_DIS():
     def __init__(self, clk, data, enable):
-        # self.clk = clk
-        # self.data = data
-        # self.enable = enable
-        # wiringpi.wiringPiSetup()
-        # wiringpi.pinMode(self.clk, 1)
-        # wiringpi.pinMode(self.data, 1)
-        # wiringpi.pinMode(self.enable, 1)
 
         self.clk = digitalio.DigitalInOut(clk)
         self.clk.direction = digitalio.Direction.OUTPUT
@@ -27,6 +16,11 @@ class TrixieView_DIS():
         self.data.direction = digitalio.Direction.OUTPUT
         self.enable = digitalio.DigitalInOut(enable)
         self.enable.direction = digitalio.Direction.OUTPUT
+
+        # Initial settings
+        self.clk.value = True
+        self.data.value = True
+        self.enable.value = False
 
         self.showData("Welcome", "")
 
@@ -36,9 +30,11 @@ class TrixieView_DIS():
         return result
 
     def showData(self, label, data):
+        self.enable.value = True
         if (len(label) > 8):
             label = self.anti_vowel(label)
         label = label[:8].center(8)
+        label = label.upper() # Audi requires uppercase
         data = data[:7].center(7)
         message = label + data
 
@@ -60,23 +56,22 @@ class TrixieView_DIS():
         byteArr.append(checksum)
         byteObj = bytes(byteArr)
 
-        self.enable.value = True
-        # wiringpi.digitalWrite(self.enable, 1)
-        for val in byteObj:
-            for i in range(8):
-                if (val & 0x80):
-                    self.data.value = True
-                    # wiringpi.digitalWrite(self.data, 1)
-                else:
-                    self.data.value = False
-                    # wiringpi.digitalWrite(self.data, 0)
-                val <<= 1
-            self.clk.value = False
-            self.clk.value = True
-            # wiringpi.digitalWrite(self.clk, 0)
-            # wiringpi.digitalWrite(self.clk, 1)
+        # blip the enable because derpston did...
         self.enable.value = False
-        # wiringpi.digitalWrite(self.enable, 0)
+        self.enable.value = True
+        for val in byteObj:
+            for _i in range(8):
+                self.clk.value = True
+                if (val & 0x80):
+                    self.data.value = False # inverted logic
+                else:
+                    self.data.value = True # inverted logic
+                val <<= 1
+                self.clk.value = False
+        # Reset to default
+        self.enable.value = False
+        self.clk.value = True
+        self.data.value = True
 
 
 viewRadio = TrixieView_DIS(dis_clk_pin, dis_data_pin, dis_enable_pin)

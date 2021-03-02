@@ -43,9 +43,9 @@ void sendMessage() {
         digitalWrite(data_pin, HIGH); // inverted logic
       }
       data <<= 1;
-      if (j == 3) {
-        // Serial.print(" ");
-      }
+      // if (j == 3) {
+      //   Serial.print(" ");
+      // }
       digitalWrite(clk_pin, LOW);
     }
     // Serial.print("  ");
