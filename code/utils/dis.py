@@ -19,9 +19,9 @@ class TrixieView_DIS():
         self.enable.direction = digitalio.Direction.OUTPUT
 
         # Initial settings
+        self.enable.value = False
         self.clk.value = True
         self.data.value = True
-        self.enable.value = False
 
         if (numLines <= 1):
             self.numLines = 1
@@ -52,7 +52,7 @@ class TrixieView_DIS():
             label = label[:8].center(8).upper() # Audi requires uppercase
             data = data[:7].center(7)
             message = label + data
-
+        print(": " + message + " :")
         msgArr = bytearray(message, "ascii")
         header = 0xF0
         command = 0x1C
@@ -78,18 +78,26 @@ class TrixieView_DIS():
             for _i in range(8):
                 self.clk.value = True
                 if (val & 0x80):
+                    print("1", end="")
                     self.data.value = False # inverted logic
                 else:
+                    print("0", end="")
                     self.data.value = True # inverted logic
                 val <<= 1
+                if (_i == 3):
+                    print(" ", end="")
                 self.clk.value = False
+            print(" ")
         # Reset to default
         self.enable.value = False
         self.clk.value = True
         self.data.value = True
+        print("-------")
 
 
 viewRadio = TrixieView_DIS(dis_clk_pin, dis_data_pin, dis_enable_pin, 2)
+viewRadio.showData("   99.2", "FM1-1")
+time.sleep(2.0)
 viewRadio.showData("Eng Load", str(6))
 time.sleep(2.0)
 viewRadio.showData("Cool Tmp", str(190))
