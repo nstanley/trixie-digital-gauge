@@ -95,19 +95,19 @@ class TrixieView_DIS():
                 # self.clk.value = True
                 wiringpi.digitalWrite(self.clk, 1)
                 if (val & 0x80):
-                    print("1", end="")
+                    # print("1", end="")
                     # self.data.value = False # inverted logic
                     wiringpi.digitalWrite(self.data, 0)
                 else:
-                    print("0", end="")
+                    # print("0", end="")
                     # self.data.value = True # inverted logic
                     wiringpi.digitalWrite(self.data, 1)
                 val <<= 1
-                if (_i == 3):
-                    print(" ", end="")
+                # if (_i == 3):
+                    # print(" ", end="")
                 # self.clk.value = False
                 wiringpi.digitalWrite(self.clk, 0)
-            print(" ")
+            # print(" ")
         # Reset to default
         wiringpi.digitalWrite(self.enable, 0)
         wiringpi.digitalWrite(self.clk, 1)
