@@ -32,13 +32,9 @@ enc_B_pin = 24
 enc_btn_pin = 25
 
 # Radio display pins (WiringPi numbering)
-# dis_clk_pin = 27
-# dis_data_pin = 28
-# dis_enable_pin = 29
-# Broadcom numbering
-dis_clk_pin = board.D16
-dis_data_pin = board.D20
-dis_enable_pin =board.D21
+dis_clk_pin = 27
+dis_data_pin = 28
+dis_enable_pin = 29
 
 class Mode(str, enum.Enum):
     ControlGauge = "ControlGauge"
@@ -49,7 +45,7 @@ class TrixieController():
     def __init__(self):
         # Setup VIEW
         self.viewGauge = TrixieView_OLED(cs_pin, dc_pin, reset_pin, BAUDRATE, splashFile)
-        # self.viewRadio = TrixieView_DIS(dis_clk_pin, dis_data_pin, dis_enable_pin)
+        self.viewRadio = TrixieView_DIS(dis_clk_pin, dis_data_pin, dis_enable_pin, 1)
     
         # Setup MODEL
         self.modelDemo = TrixieModel_Demo()
@@ -100,10 +96,10 @@ class TrixieController():
         while (running):
             try:
                 self.viewGauge.showData(self.labels[self.gaugeIndex], str(self.values[self.gaugeIndex]()))
-                # if (self.radioIndex >= len(self.labels)):
-                #     self.viewRadio.showData("", "")
-                # else:
-                #     self.viewRadio.showData(self.labels[self.radioIndex], str(self.values[self.radioIndex]()))
+                if (self.radioIndex >= len(self.labels)):
+                    self.viewRadio.showData("", "")
+                else:
+                    self.viewRadio.showData(self.labels[self.radioIndex], str(self.values[self.radioIndex]()))
                 time.sleep(0.2)
             except:
                 running = False

@@ -93,23 +93,26 @@ class TrixieView_OLED():
         self.disp.image(splash)
 
 class TrixieView_DIS():
-    def __init__(self, clk, data, enable):
-        # self.clk = clk
-        # self.data = data
-        # self.enable = enable
-        # wiringpi.wiringPiSetup()
-        # wiringpi.pinMode(self.clk, 1)
-        # wiringpi.pinMode(self.data, 1)
-        # wiringpi.pinMode(self.enable, 1)
+    def __init__(self, clk, data, enable, numLines):
+        self.clk = clk
+        self.data = data
+        self.enable = enable
+        wiringpi.wiringPiSetup()
+        wiringpi.pinMode(self.clk, 1)
+        wiringpi.pinMode(self.data, 1)
+        wiringpi.pinMode(self.enable, 1)
 
-        self.clk = digitalio.DigitalInOut(clk)
-        self.clk.direction = digitalio.Direction.OUTPUT
-        self.data = digitalio.DigitalInOut(data)
-        self.data.direction = digitalio.Direction.OUTPUT
-        self.enable = digitalio.DigitalInOut(enable)
-        self.enable.direction = digitalio.Direction.OUTPUT
+        # Initial settings
+        wiringpi.digitalWrite(self.enable, 0)
+        wiringpi.digitalWrite(self.clk, 1)
+        wiringpi.digitalWrite(self.data, 1)
 
-        self.showData("Welcome", "")
+        if (numLines <= 1):
+            self.numLines = 1
+            self.showData("", "HI!")
+        else:
+            self.numLines = 2
+            self.showData("Welcome", "")
 
     # thanks https://stackoverflow.com/a/21582376
     def anti_vowel(self, msg):
@@ -117,12 +120,23 @@ class TrixieView_DIS():
         return result
 
     def showData(self, label, data):
-        if (len(label) > 8):
+        # self.enable.value = True
+        wiringpi.digitalWrite(self.enable, 1)
+        if (self.numLines == 1):
             label = self.anti_vowel(label)
-        label = label[:8].center(8)
-        data = data[:7].center(7)
-        message = label + data
-
+            label = label[:3].upper()
+            if (len(data) >= 4):
+                if (data[3] == '.'):
+                    data = data[:3]
+            data = data[:4].rjust(4)
+            message = label + " " + data + "       "
+        else: # numLines == 2
+            if (len(label) > 8):
+                label = self.anti_vowel(label)
+            label = label[:8].center(8).upper() # Audi requires uppercase
+            data = data[:7].center(7)
+            message = label + data
+        print(": " + message + " :")
         msgArr = bytearray(message, "ascii")
         header = 0xF0
         command = 0x1C
@@ -141,20 +155,19 @@ class TrixieView_DIS():
         byteArr.append(checksum)
         byteObj = bytes(byteArr)
 
-        self.enable.value = True
-        # wiringpi.digitalWrite(self.enable, 1)
+        # blip the enable because derpston did...
+        wiringpi.digitalWrite(self.enable, 0)
+        wiringpi.digitalWrite(self.enable, 1)
         for val in byteObj:
-            for i in range(8):
+            for _i in range(8):
+                wiringpi.digitalWrite(self.clk, 1)
                 if (val & 0x80):
-                    self.data.value = True
-                    # wiringpi.digitalWrite(self.data, 1)
+                    wiringpi.digitalWrite(self.data, 0) # active low
                 else:
-                    self.data.value = False
-                    # wiringpi.digitalWrite(self.data, 0)
+                    wiringpi.digitalWrite(self.data, 1)
                 val <<= 1
-            self.clk.value = False
-            self.clk.value = True
-            # wiringpi.digitalWrite(self.clk, 0)
-            # wiringpi.digitalWrite(self.clk, 1)
-        self.enable.value = False
-        # wiringpi.digitalWrite(self.enable, 0)
+                wiringpi.digitalWrite(self.clk, 0)
+        # Reset to default
+        wiringpi.digitalWrite(self.enable, 0)
+        wiringpi.digitalWrite(self.clk, 1)
+        wiringpi.digitalWrite(self.data, 1)
