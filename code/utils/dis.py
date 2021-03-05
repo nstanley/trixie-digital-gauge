@@ -2,26 +2,39 @@ import digitalio
 import board
 import re
 import time
-
+import wiringpi
+# WiringPi numbering
+dis_clk_pin = 27
+dis_data_pin = 28
+dis_enable_pin = 29
 # Broadcom numbering
-dis_clk_pin = board.D16
-dis_data_pin = board.D20
-dis_enable_pin =board.D21
+# dis_clk_pin = board.D16
+# dis_data_pin = board.D20
+# dis_enable_pin =board.D21
 
 class TrixieView_DIS():
     def __init__(self, clk, data, enable, numLines):
-
-        self.clk = digitalio.DigitalInOut(clk)
-        self.clk.direction = digitalio.Direction.OUTPUT
-        self.data = digitalio.DigitalInOut(data)
-        self.data.direction = digitalio.Direction.OUTPUT
-        self.enable = digitalio.DigitalInOut(enable)
-        self.enable.direction = digitalio.Direction.OUTPUT
+        self.clk = clk
+        self.data = data
+        self.enable = enable
+        wiringpi.wiringPiSetup()
+        wiringpi.pinMode(self.clk, 1)
+        wiringpi.pinMode(self.data, 1)
+        wiringpi.pinMode(self.enable, 1)
+        # self.clk = digitalio.DigitalInOut(clk)
+        # self.clk.direction = digitalio.Direction.OUTPUT
+        # self.data = digitalio.DigitalInOut(data)
+        # self.data.direction = digitalio.Direction.OUTPUT
+        # self.enable = digitalio.DigitalInOut(enable)
+        # self.enable.direction = digitalio.Direction.OUTPUT
 
         # Initial settings
-        self.enable.value = False
-        self.clk.value = True
-        self.data.value = True
+        wiringpi.digitalWrite(self.enable, 0)
+        wiringpi.digitalWrite(self.clk, 1)
+        wiringpi.digitalWrite(self.data, 1)
+        # self.enable.value = False
+        # self.clk.value = True
+        # self.data.value = True
 
         if (numLines <= 1):
             self.numLines = 1
@@ -37,7 +50,8 @@ class TrixieView_DIS():
         return result
 
     def showData(self, label, data):
-        self.enable.value = True
+        # self.enable.value = True
+        wiringpi.digitalWrite(self.enable, 1)
         if (self.numLines == 1):
             label = self.anti_vowel(label)
             label = label[:3].upper()
@@ -72,26 +86,35 @@ class TrixieView_DIS():
         byteObj = bytes(byteArr)
 
         # blip the enable because derpston did...
-        self.enable.value = False
-        self.enable.value = True
+        wiringpi.digitalWrite(self.enable, 0)
+        wiringpi.digitalWrite(self.enable, 1)
+        # self.enable.value = False
+        # self.enable.value = True
         for val in byteObj:
             for _i in range(8):
-                self.clk.value = True
+                # self.clk.value = True
+                wiringpi.digitalWrite(self.clk, 1)
                 if (val & 0x80):
                     print("1", end="")
-                    self.data.value = False # inverted logic
+                    # self.data.value = False # inverted logic
+                    wiringpi.digitalWrite(self.data, 0)
                 else:
                     print("0", end="")
-                    self.data.value = True # inverted logic
+                    # self.data.value = True # inverted logic
+                    wiringpi.digitalWrite(self.data, 1)
                 val <<= 1
                 if (_i == 3):
                     print(" ", end="")
-                self.clk.value = False
+                # self.clk.value = False
+                wiringpi.digitalWrite(self.clk, 0)
             print(" ")
         # Reset to default
-        self.enable.value = False
-        self.clk.value = True
-        self.data.value = True
+        wiringpi.digitalWrite(self.enable, 0)
+        wiringpi.digitalWrite(self.clk, 1)
+        wiringpi.digitalWrite(self.data, 1)
+        # self.enable.value = False
+        # self.clk.value = True
+        # self.data.value = True
         print("-------")
 
 
