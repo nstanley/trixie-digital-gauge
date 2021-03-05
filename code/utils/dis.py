@@ -45,7 +45,7 @@ class TrixieView_DIS():
                 if (data[3] == '.'):
                     data = data[:3]
             data = data[:4].rjust(4)
-            message = label + " " + data
+            message = label + " " + data + "       "
         else: # numLines == 2
             if (len(label) > 8):
                 label = self.anti_vowel(label)
