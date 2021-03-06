@@ -1,8 +1,10 @@
 import os
+import re
 import time
 import subprocess
 import digitalio
 import board
+import wiringpi
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.ili9341 as ili9341
 import adafruit_rgb_display.st7789 as st7789  # pylint: disable=unused-import
@@ -13,7 +15,7 @@ import adafruit_rgb_display.ssd1331 as ssd1331  # pylint: disable=unused-import
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-class TrixieView():
+class TrixieView_OLED():
     def __init__(self, cs_pin, dc_pin, reset_pin, buad, splashFile):
         # Setup SPI connection
         print("   Connecting to OLED via SPI...")
@@ -89,3 +91,81 @@ class TrixieView():
     def showSplash(self, file):
         splash = Image.open(file)
         self.disp.image(splash)
+
+class TrixieView_DIS():
+    def __init__(self, clk, data, enable, numLines):
+        self.clk = clk
+        self.data = data
+        self.enable = enable
+        wiringpi.wiringPiSetup()
+        wiringpi.pinMode(self.clk, 1)
+        wiringpi.pinMode(self.data, 1)
+        wiringpi.pinMode(self.enable, 1)
+
+        # Initial settings
+        wiringpi.digitalWrite(self.enable, 0)
+        wiringpi.digitalWrite(self.clk, 1)
+        wiringpi.digitalWrite(self.data, 1)
+
+        if (numLines <= 1):
+            self.numLines = 1
+            self.showData("", "HI!")
+        else:
+            self.numLines = 2
+            self.showData("Welcome", "")
+
+    # thanks https://stackoverflow.com/a/21582376
+    def anti_vowel(self, msg):
+        result = re.sub(r'[aeiou]', '', msg)
+        return result
+
+    def showData(self, label, data):
+        wiringpi.digitalWrite(self.enable, 1)
+        if (self.numLines == 1):
+            label = self.anti_vowel(label)
+            label = label[:3].upper()
+            if (len(data) >= 4):
+                if (data[3] == '.'):
+                    data = data[:3]
+            data = data[:4].rjust(4)
+            message = label + " " + data + "       "
+        else: # numLines == 2
+            if (len(label) > 8):
+                label = self.anti_vowel(label)
+            label = label[:8].center(8).upper() # Audi requires uppercase
+            data = data[:7].center(7)
+            message = label + data
+        msgArr = bytearray(message, "ascii")
+        header = 0xF0
+        command = 0x1C
+
+        byteArr = bytearray()
+        byteArr.append(header)
+        byteArr = byteArr + msgArr
+        byteArr.append(command)
+        byteObj = bytes(byteArr)
+
+        checksum = 0
+        for val in byteObj:
+            checksum += val
+        checksum &= 0xFF
+        checksum ^= 0xFF
+        byteArr.append(checksum)
+        byteObj = bytes(byteArr)
+
+        # blip the enable because derpston did...
+        wiringpi.digitalWrite(self.enable, 0)
+        wiringpi.digitalWrite(self.enable, 1)
+        for val in byteObj:
+            for _i in range(8):
+                wiringpi.digitalWrite(self.clk, 1)
+                if (val & 0x80):
+                    wiringpi.digitalWrite(self.data, 0) # active low
+                else:
+                    wiringpi.digitalWrite(self.data, 1)
+                val <<= 1
+                wiringpi.digitalWrite(self.clk, 0)
+        # Reset to default
+        wiringpi.digitalWrite(self.enable, 0)
+        wiringpi.digitalWrite(self.clk, 1)
+        wiringpi.digitalWrite(self.data, 1)
