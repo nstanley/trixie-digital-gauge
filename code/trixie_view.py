@@ -120,7 +120,6 @@ class TrixieView_DIS():
         return result
 
     def showData(self, label, data):
-        # self.enable.value = True
         wiringpi.digitalWrite(self.enable, 1)
         if (self.numLines == 1):
             label = self.anti_vowel(label)
@@ -136,7 +135,6 @@ class TrixieView_DIS():
             label = label[:8].center(8).upper() # Audi requires uppercase
             data = data[:7].center(7)
             message = label + data
-        print(": " + message + " :")
         msgArr = bytearray(message, "ascii")
         header = 0xF0
         command = 0x1C
