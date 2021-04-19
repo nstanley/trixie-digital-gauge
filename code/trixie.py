@@ -135,6 +135,7 @@ class TrixieController():
             self.modeIndex = Mode.ControlNone
         elif (self.modeIndex == Mode.ControlNone):
             self.modeIndex = Mode.ControlGauge
+        self.updateControlled()
 
     def save(self):
         data = {}
@@ -161,6 +162,19 @@ class TrixieController():
             self.gaugeIndex = 0
             self.radioIndex = 0
             self.modeIndex = Mode.ControlNone
+        finally:
+            self.updateControlled()
+
+    def updateControlled(self):
+        if (self.modeIndex == Mode.ControlGauge):
+            self.viewRadio.setControl(False)
+            self.viewGauge.setControl(True)
+        elif (self.modeIndex == Mode.ControlRadio):
+            self.viewGauge.setControl(False)
+            self.viewRadio.setControl(True)
+        else:
+            self.viewGauge.setControl(False)
+            self.viewRadio.setControl(False)
 
 def main():
     print("Trixie Digital Gauge Startup!")

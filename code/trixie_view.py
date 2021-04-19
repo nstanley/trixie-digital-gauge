@@ -17,6 +17,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class TrixieView_OLED():
     def __init__(self, cs_pin, dc_pin, reset_pin, buad, splashFile):
+        # Flag to show if screen is currently controlled by the controller
+        self.controlled = False
+
         # Setup SPI connection
         print("   Connecting to OLED via SPI...")
         self.spi = board.SPI()
@@ -65,6 +68,10 @@ class TrixieView_OLED():
         # Clear    
         self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
         
+        # Show controlled status
+        if (self.controlled):
+            self.draw.rectangle(self.width-10, self.height-10, 10, 10), outline=0, fill=(255,0,0))
+
         # Assign values
         # Label
         self.y = self.padding
@@ -92,8 +99,12 @@ class TrixieView_OLED():
         splash = Image.open(file)
         self.disp.image(splash)
 
+    def setControl(bool):
+        self.controlled = bool
+
 class TrixieView_DIS():
     def __init__(self, clk, data, enable, numLines):
+        self.controlled = False
         self.clk = clk
         self.data = data
         self.enable = enable
@@ -135,6 +146,11 @@ class TrixieView_DIS():
             label = label[:8].center(8).upper() # Audi requires uppercase
             data = data[:7].center(7)
             message = label + data
+
+        # Show controlled status
+        if (self.controlled):
+            label[0] = '*'
+
         msgArr = bytearray(message, "ascii")
         header = 0xF0
         command = 0x1C
@@ -169,3 +185,6 @@ class TrixieView_DIS():
         wiringpi.digitalWrite(self.enable, 0)
         wiringpi.digitalWrite(self.clk, 1)
         wiringpi.digitalWrite(self.data, 1)
+
+    def setControl(bool):
+        self.controlled = bool
